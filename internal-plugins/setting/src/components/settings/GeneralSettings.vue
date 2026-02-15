@@ -471,6 +471,26 @@
       </div>
     </div>
 
+    <!-- 悬浮球文字 -->
+    <div v-if="floatingBallEnabled" class="setting-item sub-setting">
+      <div class="setting-label">
+        <span>悬浮球文字</span>
+        <span class="setting-desc">自定义悬浮球上显示的文字，默认为 Z</span>
+      </div>
+      <div class="setting-control">
+        <input
+          v-model="floatingBallLetter"
+          type="text"
+          class="input"
+          placeholder="Z"
+          maxlength="2"
+          style="width: 60px; text-align: center;"
+          @blur="handleFloatingBallLetterChange"
+          @keyup.enter="handleFloatingBallLetterChange"
+        />
+      </div>
+    </div>
+
     <!-- 开机启动设置 -->
     <div class="setting-item">
       <div class="setting-label">
@@ -549,6 +569,22 @@
           placeholder="例如: https://market.example.com"
           @blur="handlePluginMarketUrlChange"
           @keyup.enter="handlePluginMarketUrlChange"
+        />
+      </div>
+    </div>
+
+    <!-- 开发者工具位置 -->
+    <div class="setting-item">
+      <div class="setting-label">
+        <span>开发者工具位置</span>
+        <span class="setting-desc">设置插件开发者工具的默认打开位置</span>
+      </div>
+      <div class="setting-control">
+        <Dropdown
+          v-model="devToolsMode"
+          :options="devToolsModeOptions"
+          style="min-width: 200px"
+          @change="handleDevToolsModeChange"
         />
       </div>
     </div>
@@ -634,6 +670,13 @@ const searchModeOptions = [
   { label: '列表模式', value: 'list' }
 ]
 
+const devToolsModeOptions = [
+  { label: '独立窗口', value: 'detach' },
+  { label: '靠右', value: 'right' },
+  { label: '靠下', value: 'bottom' },
+  { label: '独立窗口（可停靠）', value: 'undocked' }
+]
+
 const superPanelMouseButtonOptions = [
   { label: '按下鼠标中键', value: 'middle' },
   { label: '长按鼠标中键', value: 'middle-long' },
@@ -704,9 +747,13 @@ const showTrayIcon = ref(true)
 
 // 悬浮球设置
 const floatingBallEnabled = ref(false)
+const floatingBallLetter = ref('Z')
 
 // 开机启动设置
 const launchAtLogin = ref(false)
+
+// 开发者工具位置
+const devToolsMode = ref<'right' | 'bottom' | 'undocked' | 'detach'>('detach')
 
 // 代理设置
 const proxyEnabled = ref(false)
@@ -1155,6 +1202,18 @@ async function handleFloatingBallChange(): Promise<void> {
   }
 }
 
+// 处理悬浮球文字变化
+async function handleFloatingBallLetterChange(): Promise<void> {
+  try {
+    const letter = floatingBallLetter.value.trim() || 'Z'
+    floatingBallLetter.value = letter
+    await window.ztools.internal.setFloatingBallLetter(letter)
+    console.log('悬浮球文字已更新:', letter)
+  } catch (err) {
+    console.error('更新悬浮球文字失败:', err)
+  }
+}
+
 // 处理窗口材质变化
 async function handleWindowMaterialChange(): Promise<void> {
   try {
@@ -1205,6 +1264,16 @@ async function handleLaunchAtLoginChange(): Promise<void> {
     console.error('更新开机启动设置失败:', error)
     // 恢复状态
     launchAtLogin.value = !launchAtLogin.value
+  }
+}
+
+// 处理开发者工具位置变化
+async function handleDevToolsModeChange(): Promise<void> {
+  try {
+    await saveSettings()
+    console.log('开发者工具位置已更新:', devToolsMode.value)
+  } catch (err) {
+    console.error('保存开发者工具位置失败:', err)
   }
 }
 
@@ -1474,6 +1543,9 @@ async function loadSettings(): Promise<void> {
       windowMaterial.value = data.windowMaterial
       acrylicLightOpacity.value = data.acrylicLightOpacity ?? 78
       acrylicDarkOpacity.value = data.acrylicDarkOpacity ?? 50
+      // 开发者工具位置
+      devToolsMode.value = data.devToolsMode ?? 'detach'
+
       // 代理配置
       proxyEnabled.value = data.proxyEnabled ?? false
       proxyUrl.value = data.proxyUrl ?? ''
@@ -1484,6 +1556,7 @@ async function loadSettings(): Promise<void> {
 
       // 悬浮球配置
       floatingBallEnabled.value = data.floatingBallEnabled ?? false
+      floatingBallLetter.value = data.floatingBallLetter || 'Z'
 
       // 加载自定义颜色
       if (data.customColor) {
@@ -1544,6 +1617,7 @@ async function saveSettings(): Promise<void> {
       windowMaterial: windowMaterial.value,
       acrylicLightOpacity: acrylicLightOpacity.value,
       acrylicDarkOpacity: acrylicDarkOpacity.value,
+      devToolsMode: devToolsMode.value,
       proxyEnabled: proxyEnabled.value,
       proxyUrl: proxyUrl.value,
       pluginMarketCustom: pluginMarketCustom.value,
