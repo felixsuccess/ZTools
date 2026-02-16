@@ -1,591 +1,608 @@
 <template>
   <div class="content-panel">
-    <!-- 快捷键设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>呼出快捷键</span>
-        <span class="setting-desc">设置全局快捷键来呼出应用</span>
-      </div>
-      <div class="setting-control">
-        <HotkeyInput v-model="hotkey" :platform="platform" @change="handleHotkeyChange" />
-        <button
-          v-if="hotkey !== defaultHotkey"
-          class="btn btn-icon"
-          title="重置"
-          @click="resetHotkey"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="1 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+    <!-- ==================== 基础 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">基础</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>呼出快捷键</span>
+          <span class="setting-desc">设置全局快捷键来呼出应用</span>
+        </div>
+        <div class="setting-control">
+          <HotkeyInput v-model="hotkey" :platform="platform" @change="handleHotkeyChange" />
+          <button
+            v-if="hotkey !== defaultHotkey"
+            class="btn btn-icon"
+            title="重置"
+            @click="resetHotkey"
           >
-            <path
-              d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
+            <svg
+              width="20"
+              height="20"
+              viewBox="1 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- 窗口不透明度设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>窗口不透明度</span>
-        <span class="setting-desc">调整窗口的透明度</span>
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>开机自动启动</span>
+          <span class="setting-desc">登录系统时自动启动应用</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input v-model="launchAtLogin" type="checkbox" @change="handleLaunchAtLoginChange" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
-      <div class="setting-control opacity-control">
-        <Slider
-          v-model="opacity"
-          :min="0.3"
-          :max="1"
-          :step="0.01"
-          :formatter="(value) => `${Math.round(value * 100)}%`"
-          @change="handleOpacityChange"
-        />
-      </div>
-    </div>
 
-    <!-- 窗口默认高度设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>插件默认高度</span>
-        <span class="setting-desc">设置进入插件时的默认高度（像素）</span>
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>显示托盘图标</span>
+          <span class="setting-desc">在系统托盘中显示应用图标</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input v-model="showTrayIcon" type="checkbox" @change="handleTrayIconChange" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
-      <div class="setting-control">
-        <input
-          v-model.number="windowDefaultHeight"
-          type="number"
-          class="input"
-          placeholder="600"
-          min="200"
-          @blur="handleWindowDefaultHeightChange"
-          @keyup.enter="handleWindowDefaultHeightChange"
-        />
-        <button
-          v-if="windowDefaultHeight !== 541"
-          class="btn btn-icon"
-          title="重置"
-          @click="resetWindowDefaultHeight"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="1 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>显示悬浮球</span>
+          <span class="setting-desc"
+            >在桌面显示一个置顶悬浮球，点击可快速启动/隐藏主界面，支持拖入文件到悬浮球</span
           >
-            <path
-              d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input
+              v-model="floatingBallEnabled"
+              type="checkbox"
+              @change="handleFloatingBallChange"
             />
-          </svg>
-        </button>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div v-if="floatingBallEnabled" class="setting-item">
+        <div class="setting-label">
+          <span>悬浮球文字</span>
+          <span class="setting-desc">自定义悬浮球上显示的文字，默认为 Z</span>
+        </div>
+        <div class="setting-control">
+          <input
+            v-model="floatingBallLetter"
+            type="text"
+            class="input"
+            placeholder="Z"
+            maxlength="2"
+            style="width: 60px; text-align: center"
+            @blur="handleFloatingBallLetterChange"
+            @keyup.enter="handleFloatingBallLetterChange"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- 主题设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>主题设置</span>
-        <span class="setting-desc">选择应用的主题外观</span>
+    <!-- ==================== 外观 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">外观</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>主题设置</span>
+          <span class="setting-desc">选择应用的主题外观</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown v-model="theme" :options="themeOptions" @change="handleThemeChange" />
+        </div>
       </div>
-      <div class="setting-control">
-        <Dropdown v-model="theme" :options="themeOptions" @change="handleThemeChange" />
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>主题色</span>
+          <span class="setting-desc">自定义应用的主色调</span>
+        </div>
+        <div class="setting-control color-control">
+          <div
+            v-for="color in themeColors"
+            :key="color.value"
+            class="color-option"
+            :class="{ active: primaryColor === color.value }"
+            :style="{ backgroundColor: color.hex }"
+            :title="color.label"
+            @click="handlePrimaryColorChange(color.value)"
+          ></div>
+          <div
+            class="color-option custom-color-option"
+            :class="{ active: primaryColor === 'custom' }"
+            :style="{ backgroundColor: customColor }"
+            title="自定义"
+            @click="handleSelectCustomColor"
+          ></div>
+          <button v-if="primaryColor === 'custom'" class="btn btn-sm" @click="openColorPicker">
+            自定义
+          </button>
+          <input
+            ref="colorPickerInput"
+            type="color"
+            :value="customColor"
+            class="color-picker-hidden"
+            @input="handleCustomColorChange"
+          />
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>窗口不透明度</span>
+          <span class="setting-desc">调整窗口的透明度</span>
+        </div>
+        <div class="setting-control opacity-control">
+          <Slider
+            v-model="opacity"
+            :min="0.3"
+            :max="1"
+            :step="0.01"
+            :formatter="(value) => `${Math.round(value * 100)}%`"
+            @change="handleOpacityChange"
+          />
+        </div>
+      </div>
+
+      <div v-if="platform === 'win32'" class="setting-item">
+        <div class="setting-label">
+          <span>窗口材质</span>
+          <span class="setting-desc">选择窗口背景材质效果（需要 Windows 11）</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="windowMaterial"
+            :options="windowMaterialOptions"
+            @change="handleWindowMaterialChange"
+          />
+        </div>
+      </div>
+
+      <div v-if="platform === 'win32' && windowMaterial === 'acrylic'" class="setting-item">
+        <div class="setting-label">
+          <span>明亮模式背景色透明度</span>
+          <span class="setting-desc">调整亚克力材质在明亮模式下的白色背景叠加透明度</span>
+        </div>
+        <div class="setting-control opacity-control">
+          <Slider
+            v-model="acrylicLightOpacity"
+            :min="0"
+            :max="100"
+            :step="1"
+            :formatter="(value) => `${value}%`"
+            @change="handleAcrylicLightOpacityChange"
+          />
+        </div>
+      </div>
+
+      <div v-if="platform === 'win32' && windowMaterial === 'acrylic'" class="setting-item">
+        <div class="setting-label">
+          <span>暗黑模式背景色透明度</span>
+          <span class="setting-desc">调整亚克力材质在暗黑模式下的黑色背景叠加透明度</span>
+        </div>
+        <div class="setting-control opacity-control">
+          <Slider
+            v-model="acrylicDarkOpacity"
+            :min="0"
+            :max="100"
+            :step="1"
+            :formatter="(value) => `${value}%`"
+            @change="handleAcrylicDarkOpacityChange"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- 主题色设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>主题色</span>
-        <span class="setting-desc">自定义应用的主色调</span>
-      </div>
-      <div class="setting-control color-control">
-        <div
-          v-for="color in themeColors"
-          :key="color.value"
-          class="color-option"
-          :class="{ active: primaryColor === color.value }"
-          :style="{ backgroundColor: color.hex }"
-          :title="color.label"
-          @click="handlePrimaryColorChange(color.value)"
-        ></div>
-        <div
-          class="color-option custom-color-option"
-          :class="{ active: primaryColor === 'custom' }"
-          :style="{ backgroundColor: customColor }"
-          title="自定义"
-          @click="handleSelectCustomColor"
-        ></div>
-        <button v-if="primaryColor === 'custom'" class="btn btn-sm" @click="openColorPicker">
-          自定义
-        </button>
-        <input
-          ref="colorPickerInput"
-          type="color"
-          :value="customColor"
-          class="color-picker-hidden"
-          @input="handleCustomColorChange"
-        />
-      </div>
-    </div>
+    <!-- ==================== 搜索 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">搜索</h3>
 
-    <!-- 窗口材质设置（仅 Windows） -->
-    <div v-if="platform === 'win32'" class="setting-item">
-      <div class="setting-label">
-        <span>窗口材质</span>
-        <span class="setting-desc">选择窗口背景材质效果（需要 Windows 11）</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="windowMaterial"
-          :options="windowMaterialOptions"
-          @change="handleWindowMaterialChange"
-        />
-      </div>
-    </div>
-
-    <!-- 亚克力材质背景色透明度设置（仅在亚克力材质时显示） -->
-    <div v-if="platform === 'win32' && windowMaterial === 'acrylic'" class="setting-item">
-      <div class="setting-label">
-        <span>明亮模式背景色透明度</span>
-        <span class="setting-desc">调整亚克力材质在明亮模式下的白色背景叠加透明度</span>
-      </div>
-      <div class="setting-control opacity-control">
-        <Slider
-          v-model="acrylicLightOpacity"
-          :min="0"
-          :max="100"
-          :step="1"
-          :formatter="(value) => `${value}%`"
-          @change="handleAcrylicLightOpacityChange"
-        />
-      </div>
-    </div>
-
-    <div v-if="platform === 'win32' && windowMaterial === 'acrylic'" class="setting-item">
-      <div class="setting-label">
-        <span>暗黑模式背景色透明度</span>
-        <span class="setting-desc">调整亚克力材质在暗黑模式下的黑色背景叠加透明度</span>
-      </div>
-      <div class="setting-control opacity-control">
-        <Slider
-          v-model="acrylicDarkOpacity"
-          :min="0"
-          :max="100"
-          :step="1"
-          :formatter="(value) => `${value}%`"
-          @change="handleAcrylicDarkOpacityChange"
-        />
-      </div>
-    </div>
-
-    <!-- 搜索框提示文字设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>搜索框提示文字</span>
-        <span class="setting-desc">自定义搜索框的占位提示文字</span>
-      </div>
-      <div class="setting-control">
-        <input
-          v-model="placeholder"
-          type="text"
-          class="input"
-          placeholder="输入提示文字"
-          @blur="handlePlaceholderChange"
-          @keyup.enter="handlePlaceholderChange"
-        />
-        <button
-          v-if="placeholder !== defaultPlaceholder"
-          class="btn btn-icon"
-          title="重置"
-          @click="handleResetPlaceholder"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="1 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>搜索框提示文字</span>
+          <span class="setting-desc">自定义搜索框的占位提示文字</span>
+        </div>
+        <div class="setting-control">
+          <input
+            v-model="placeholder"
+            type="text"
+            class="input"
+            placeholder="输入提示文字"
+            @blur="handlePlaceholderChange"
+            @keyup.enter="handlePlaceholderChange"
+          />
+          <button
+            v-if="placeholder !== defaultPlaceholder"
+            class="btn btn-icon"
+            title="重置"
+            @click="handleResetPlaceholder"
           >
-            <path
-              d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
+            <svg
+              width="20"
+              height="20"
+              viewBox="1 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- 头像设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>搜索框头像</span>
-        <span class="setting-desc">自定义搜索框右侧显示的头像</span>
-      </div>
-      <div class="setting-control avatar-control">
-        <img
-          v-if="avatar"
-          :src="avatar"
-          :class="['avatar-preview', { 'default-avatar': avatar === defaultAvatar }]"
-          alt="头像预览"
-          draggable="false"
-        />
-        <button class="btn" @click="handleSelectAvatar">选择图片</button>
-        <button
-          v-if="avatar !== defaultAvatar"
-          class="btn btn-icon"
-          title="重置"
-          @click="handleResetAvatar"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="1 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>搜索框头像</span>
+          <span class="setting-desc">自定义搜索框右侧显示的头像</span>
+        </div>
+        <div class="setting-control avatar-control">
+          <img
+            v-if="avatar"
+            :src="avatar"
+            :class="['avatar-preview', { 'default-avatar': avatar === defaultAvatar }]"
+            alt="头像预览"
+            draggable="false"
+          />
+          <button class="btn" @click="handleSelectAvatar">选择图片</button>
+          <button
+            v-if="avatar !== defaultAvatar"
+            class="btn btn-icon"
+            title="重置"
+            @click="handleResetAvatar"
           >
-            <path
-              d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+            <svg
+              width="20"
+              height="20"
+              viewBox="1 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>搜索框模式</span>
+          <span class="setting-desc">选择搜索框的显示模式</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="searchMode"
+            :options="searchModeOptions"
+            @change="handleSearchModeChange"
+          />
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>搜索框显示最近使用</span>
+          <span class="setting-desc">开启后搜索框将显示最近使用的应用</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input
+              v-model="showRecentInSearch"
+              type="checkbox"
+              @change="handleShowRecentInSearchChange"
             />
-          </svg>
-        </button>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
-    </div>
 
-    <!-- 搜索框显示最近使用 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>搜索框显示最近使用</span>
-        <span class="setting-desc">开启后搜索框将显示最近使用的应用</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input
-            v-model="showRecentInSearch"
-            type="checkbox"
-            @change="handleShowRecentInSearchChange"
+      <div v-if="showRecentInSearch && searchMode === 'aggregate'" class="setting-item">
+        <div class="setting-label">
+          <span>最近使用显示行数</span>
+          <span class="setting-desc">设置最近使用列表显示的行数（每行9个）</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="recentRows"
+            :options="recentRowsOptions"
+            @change="handleRecentRowsChange"
           />
-          <span class="toggle-slider"></span>
-        </label>
+        </div>
       </div>
-    </div>
 
-    <!-- 本地应用搜索 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>本地应用搜索</span>
-        <span class="setting-desc">开启后搜索结果将包含本地安装的应用</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input v-model="localAppSearch" type="checkbox" @change="handleLocalAppSearchChange" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- 搜索框模式设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>搜索框模式</span>
-        <span class="setting-desc">选择搜索框的显示模式</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="searchMode"
-          :options="searchModeOptions"
-          @change="handleSearchModeChange"
-        />
-      </div>
-    </div>
-
-    <!-- 最近使用行数设置 -->
-    <div v-if="showRecentInSearch && searchMode === 'aggregate'" class="setting-item">
-      <div class="setting-label">
-        <span>最近使用显示行数</span>
-        <span class="setting-desc">设置最近使用列表显示的行数（每行9个）</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="recentRows"
-          :options="recentRowsOptions"
-          @change="handleRecentRowsChange"
-        />
-      </div>
-    </div>
-
-    <!-- 固定栏行数设置 -->
-    <div v-if="searchMode === 'aggregate'" class="setting-item">
-      <div class="setting-label">
-        <span>固定栏显示行数</span>
-        <span class="setting-desc">设置已固定应用列表显示的行数（每行9个）</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="pinnedRows"
-          :options="pinnedRowsOptions"
-          @change="handlePinnedRowsChange"
-        />
-      </div>
-    </div>
-
-    <!-- 超级面板设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>启用超级面板</span>
-        <span class="setting-desc">长按鼠标按键弹出超级面板，快速访问应用和插件</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input
-            v-model="superPanelEnabled"
-            type="checkbox"
-            @change="handleSuperPanelEnabledChange"
+      <div v-if="searchMode === 'aggregate'" class="setting-item">
+        <div class="setting-label">
+          <span>固定栏显示行数</span>
+          <span class="setting-desc">设置已固定应用列表显示的行数（每行9个）</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="pinnedRows"
+            :options="pinnedRowsOptions"
+            @change="handlePinnedRowsChange"
           />
-          <span class="toggle-slider"></span>
-        </label>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>本地应用搜索</span>
+          <span class="setting-desc">开启后搜索结果将包含本地安装的应用</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input v-model="localAppSearch" type="checkbox" @change="handleLocalAppSearchChange" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 
-    <!-- 超级面板鼠标按键 -->
-    <div v-if="superPanelEnabled" class="setting-item sub-setting">
-      <div class="setting-label">
-        <span>鼠标按键弹出</span>
-        <span class="setting-desc">选择触发超级面板的鼠标按键</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="superPanelTriggerMode"
-          :options="superPanelMouseButtonOptions"
-          @change="handleSuperPanelTriggerModeChange"
-        />
-      </div>
-    </div>
+    <!-- ==================== 行为 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">行为</h3>
 
-    <!-- 超级面板长按响应时间 -->
-    <div
-      v-if="superPanelEnabled && superPanelTriggerMode.endsWith('-long')"
-      class="setting-item sub-setting"
-    >
-      <div class="setting-label">
-        <span>长按响应时间</span>
-        <span class="setting-desc">长按鼠标按键多少毫秒后弹出超级面板</span>
-      </div>
-      <div class="setting-control">
-        <input
-          v-model.number="superPanelLongPressMs"
-          type="number"
-          class="input"
-          placeholder="500"
-          min="200"
-          max="3000"
-          @blur="handleSuperPanelLongPressMsChange"
-          @keyup.enter="handleSuperPanelLongPressMsChange"
-        />
-      </div>
-    </div>
-
-    <!-- 自动粘贴设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>自动粘贴搜索框</span>
-        <span class="setting-desc">复制文本后在设定时间内打开窗口自动粘贴</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown v-model="autoPaste" :options="autoPasteOptions" @change="handleAutoPasteChange" />
-      </div>
-    </div>
-
-    <!-- 自动清空搜索框设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>自动清空搜索框</span>
-        <span class="setting-desc">窗口显示状态切换后自动清空搜索框内容的时间</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown v-model="autoClear" :options="autoClearOptions" @change="handleAutoClearChange" />
-      </div>
-    </div>
-
-    <!-- 自动返回搜索设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>自动返回到搜索</span>
-        <span class="setting-desc">主窗口打开插件后隐藏，在设定时间后自动返回搜索界面</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="autoBackToSearch"
-          :options="autoBackToSearchOptions"
-          @change="handleAutoBackToSearchChange"
-        />
-      </div>
-    </div>
-
-    <!-- 显示托盘图标设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>显示托盘图标</span>
-        <span class="setting-desc">在系统托盘中显示应用图标</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input v-model="showTrayIcon" type="checkbox" @change="handleTrayIconChange" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- 悬浮球设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>显示悬浮球</span>
-        <span class="setting-desc">在桌面显示一个置顶悬浮球，点击可快速启动/隐藏主界面，支持拖入文件到悬浮球</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input
-            v-model="floatingBallEnabled"
-            type="checkbox"
-            @change="handleFloatingBallChange"
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>自动粘贴搜索框</span>
+          <span class="setting-desc">复制文本后在设定时间内打开窗口自动粘贴</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="autoPaste"
+            :options="autoPasteOptions"
+            @change="handleAutoPasteChange"
           />
-          <span class="toggle-slider"></span>
-        </label>
+        </div>
       </div>
-    </div>
 
-    <!-- 悬浮球文字 -->
-    <div v-if="floatingBallEnabled" class="setting-item sub-setting">
-      <div class="setting-label">
-        <span>悬浮球文字</span>
-        <span class="setting-desc">自定义悬浮球上显示的文字，默认为 Z</span>
-      </div>
-      <div class="setting-control">
-        <input
-          v-model="floatingBallLetter"
-          type="text"
-          class="input"
-          placeholder="Z"
-          maxlength="2"
-          style="width: 60px; text-align: center;"
-          @blur="handleFloatingBallLetterChange"
-          @keyup.enter="handleFloatingBallLetterChange"
-        />
-      </div>
-    </div>
-
-    <!-- 开机启动设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>开机自动启动</span>
-        <span class="setting-desc">登录系统时自动启动应用</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input v-model="launchAtLogin" type="checkbox" @change="handleLaunchAtLoginChange" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- 代理设置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>网络代理</span>
-        <span class="setting-desc">配置 HTTP/HTTPS 代理服务器</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input v-model="proxyEnabled" type="checkbox" @change="handleProxyEnabledChange" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- 代理地址设置 -->
-    <div v-if="proxyEnabled" class="setting-item sub-setting">
-      <div class="setting-label">
-        <span>代理地址</span>
-        <span class="setting-desc">格式: http://host:port 或 socks5://host:port</span>
-      </div>
-      <div class="setting-control">
-        <input
-          v-model="proxyUrl"
-          type="text"
-          class="input"
-          placeholder="例如: http://127.0.0.1:7890"
-          @blur="handleProxyUrlChange"
-          @keyup.enter="handleProxyUrlChange"
-        />
-      </div>
-    </div>
-
-    <!-- 插件市场配置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>自定义插件市场</span>
-        <span class="setting-desc">配置自定义插件市场地址</span>
-      </div>
-      <div class="setting-control">
-        <label class="toggle">
-          <input
-            v-model="pluginMarketCustom"
-            type="checkbox"
-            @change="handlePluginMarketCustomChange"
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>自动清空搜索框</span>
+          <span class="setting-desc">窗口显示状态切换后自动清空搜索框内容的时间</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="autoClear"
+            :options="autoClearOptions"
+            @change="handleAutoClearChange"
           />
-          <span class="toggle-slider"></span>
-        </label>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>自动返回到搜索</span>
+          <span class="setting-desc">主窗口打开插件后隐藏，在设定时间后自动返回搜索界面</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="autoBackToSearch"
+            :options="autoBackToSearchOptions"
+            @change="handleAutoBackToSearchChange"
+          />
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>插件默认高度</span>
+          <span class="setting-desc">设置进入插件时的默认高度（像素）</span>
+        </div>
+        <div class="setting-control">
+          <input
+            v-model.number="windowDefaultHeight"
+            type="number"
+            class="input"
+            placeholder="600"
+            min="200"
+            @blur="handleWindowDefaultHeightChange"
+            @keyup.enter="handleWindowDefaultHeightChange"
+          />
+          <button
+            v-if="windowDefaultHeight !== 541"
+            class="btn btn-icon"
+            title="重置"
+            @click="resetWindowDefaultHeight"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="1 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.5 9C14.5 11.4853 12.4853 13.5 10 13.5C7.51472 13.5 5.5 11.4853 5.5 9C5.5 6.51472 7.51472 4.5 10 4.5C11.6569 4.5 13.0943 5.41421 13.8536 6.75M14 4V7H11"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== 超级面板 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">超级面板</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>启用超级面板</span>
+          <span class="setting-desc">长按鼠标按键弹出超级面板，快速访问应用和插件</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input
+              v-model="superPanelEnabled"
+              type="checkbox"
+              @change="handleSuperPanelEnabledChange"
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div v-if="superPanelEnabled" class="setting-item">
+        <div class="setting-label">
+          <span>鼠标按键弹出</span>
+          <span class="setting-desc">选择触发超级面板的鼠标按键</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="superPanelTriggerMode"
+            :options="superPanelMouseButtonOptions"
+            @change="handleSuperPanelTriggerModeChange"
+          />
+        </div>
+      </div>
+
+      <div
+        v-if="superPanelEnabled && superPanelTriggerMode.endsWith('-long')"
+        class="setting-item"
+      >
+        <div class="setting-label">
+          <span>长按响应时间</span>
+          <span class="setting-desc">长按鼠标按键多少毫秒后弹出超级面板</span>
+        </div>
+        <div class="setting-control">
+          <input
+            v-model.number="superPanelLongPressMs"
+            type="number"
+            class="input"
+            placeholder="500"
+            min="200"
+            max="3000"
+            @blur="handleSuperPanelLongPressMsChange"
+            @keyup.enter="handleSuperPanelLongPressMsChange"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- 插件市场地址设置 -->
-    <div v-if="pluginMarketCustom" class="setting-item sub-setting">
-      <div class="setting-label">
-        <span>市场地址</span>
-        <span class="setting-desc">自定义插件市场的基础 URL</span>
+    <!-- ==================== 网络 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">网络</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>网络代理</span>
+          <span class="setting-desc">配置 HTTP/HTTPS 代理服务器</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input v-model="proxyEnabled" type="checkbox" @change="handleProxyEnabledChange" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
-      <div class="setting-control">
-        <input
-          v-model="pluginMarketUrl"
-          type="text"
-          class="input"
-          placeholder="例如: https://market.example.com"
-          @blur="handlePluginMarketUrlChange"
-          @keyup.enter="handlePluginMarketUrlChange"
-        />
+
+      <div v-if="proxyEnabled" class="setting-item">
+        <div class="setting-label">
+          <span>代理地址</span>
+          <span class="setting-desc">格式: http://host:port 或 socks5://host:port</span>
+        </div>
+        <div class="setting-control">
+          <input
+            v-model="proxyUrl"
+            type="text"
+            class="input"
+            placeholder="例如: http://127.0.0.1:7890"
+            @blur="handleProxyUrlChange"
+            @keyup.enter="handleProxyUrlChange"
+          />
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>自定义插件市场</span>
+          <span class="setting-desc">配置自定义插件市场地址</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input
+              v-model="pluginMarketCustom"
+              type="checkbox"
+              @change="handlePluginMarketCustomChange"
+            />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div v-if="pluginMarketCustom" class="setting-item">
+        <div class="setting-label">
+          <span>市场地址</span>
+          <span class="setting-desc">自定义插件市场的基础 URL</span>
+        </div>
+        <div class="setting-control">
+          <input
+            v-model="pluginMarketUrl"
+            type="text"
+            class="input"
+            placeholder="例如: https://market.example.com"
+            @blur="handlePluginMarketUrlChange"
+            @keyup.enter="handlePluginMarketUrlChange"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- 开发者工具位置 -->
-    <div class="setting-item">
-      <div class="setting-label">
-        <span>开发者工具位置</span>
-        <span class="setting-desc">设置插件开发者工具的默认打开位置</span>
-      </div>
-      <div class="setting-control">
-        <Dropdown
-          v-model="devToolsMode"
-          :options="devToolsModeOptions"
-          style="min-width: 200px"
-          @change="handleDevToolsModeChange"
-        />
+    <!-- ==================== 开发者 ==================== -->
+    <div class="setting-group">
+      <h3 class="setting-group-title">开发者</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>开发者工具位置</span>
+          <span class="setting-desc">设置插件开发者工具的默认打开位置</span>
+        </div>
+        <div class="setting-control">
+          <Dropdown
+            v-model="devToolsMode"
+            :options="devToolsModeOptions"
+            style="min-width: 200px"
+            @change="handleDevToolsModeChange"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -1645,6 +1662,23 @@ onMounted(() => {
   background: var(--bg-color);
 }
 
+/* 设置分组 */
+.setting-group {
+  margin-bottom: 28px;
+}
+
+.setting-group:last-child {
+  margin-bottom: 0;
+}
+
+.setting-group-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
 /* 设置项 */
 .setting-item {
   display: flex;
@@ -1654,10 +1688,8 @@ onMounted(() => {
   border-bottom: 1px solid var(--divider-color);
 }
 
-/* 子设置项（缩进显示） */
-.sub-setting {
-  padding-left: 20px;
-  background: var(--hover-bg);
+.setting-group .setting-item:last-child {
+  border-bottom: none;
 }
 
 .setting-label {
