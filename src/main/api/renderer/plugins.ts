@@ -749,7 +749,7 @@ export class PluginsAPI {
     try {
       // 读取设置，检查是否有自定义插件市场 URL
       const settings = await databaseAPI.dbGet('settings-general')
-      const defaultBaseUrl = 'https://ztools-center.oss-cn-beijing.aliyuncs.com'
+      const defaultBaseUrl = 'https://github.com/ZToolsCenter/ZTools-plugins/releases/latest/download'
       let baseUrl = defaultBaseUrl
 
       if (settings?.pluginMarketCustom && settings?.pluginMarketUrl) {

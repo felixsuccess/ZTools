@@ -90,9 +90,7 @@ class ProxyManager {
     // 验证代理配置是否生效
     if (this.currentConfig.enabled && this.currentConfig.proxyRules) {
       // 测试外部地址（应该走自定义代理）
-      const externalProxy = await session.defaultSession.resolveProxy(
-        'https://ztools-center.oss-cn-beijing.aliyuncs.com'
-      )
+      const externalProxy = await session.defaultSession.resolveProxy('https://github.com')
       console.log('[Proxy] 外部地址代理解析:', externalProxy)
 
       // 测试本地地址（应该不走代理）
@@ -103,9 +101,7 @@ class ProxyManager {
       console.log('[Proxy] 127.0.0.1:5174 代理解析:', loopbackProxy)
     } else {
       // 测试系统代理是否生效
-      const externalProxy = await session.defaultSession.resolveProxy(
-        'https://ztools-center.oss-cn-beijing.aliyuncs.com'
-      )
+      const externalProxy = await session.defaultSession.resolveProxy('https://github.com')
       console.log('[Proxy] 使用系统代理，外部地址代理解析:', externalProxy)
     }
   }

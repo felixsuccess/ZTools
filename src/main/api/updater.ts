@@ -25,7 +25,7 @@ interface UpdatePaths {
  * 升级管理 API
  */
 export class UpdaterAPI {
-  private latestYmlUrl = 'https://ztools-center.oss-cn-beijing.aliyuncs.com/updater/latest.yml'
+  private latestYmlUrl = 'https://github.com/ZToolsCenter/ZTools/releases/latest/download/latest.yml'
   private mainWindow: BrowserWindow | null = null
   private checkTimer: NodeJS.Timeout | null = null
   private downloadedUpdateInfo: any = null
@@ -193,7 +193,7 @@ export class UpdaterAPI {
     const arch = process.arch // x64, arm64
 
     const fileName = `update-${platform}-${arch}-${version}.zip`
-    const baseUrl = 'https://ztools-center.oss-cn-beijing.aliyuncs.com/updater'
+    const baseUrl = 'https://github.com/ZToolsCenter/ZTools/releases/latest/download'
 
     return `${baseUrl}/${fileName}`
   }
