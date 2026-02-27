@@ -583,6 +583,36 @@
     <circle v-if="name === 'more'" cx="12" cy="12" r="1" fill="currentColor" />
     <circle v-if="name === 'more'" cx="5" cy="12" r="1" fill="currentColor" />
     <circle v-if="name === 'more'" cx="19" cy="12" r="1" fill="currentColor" />
+
+    <!-- 显示器图标 - Monitor -->
+    <rect
+      v-if="name === 'monitor'"
+      x="2"
+      y="3"
+      width="20"
+      height="14"
+      rx="2"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      v-if="name === 'monitor'"
+      d="M8 21H16"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      v-if="name === 'monitor'"
+      d="M12 17V21"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
   </svg>
 </template>
 

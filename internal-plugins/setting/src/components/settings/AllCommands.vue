@@ -22,7 +22,7 @@
           :class="['source-item', { active: selectedSource?.subType === 'app' }]"
           @click="selectSource({ subType: 'app', name: '系统应用' })"
         >
-          <span class="source-icon">💻</span>
+          <Icon name="monitor" :size="18" class="source-icon source-svg-icon" />
           <span class="source-name">系统应用</span>
           <span class="source-badge">{{ appCount }}</span>
         </div>
@@ -33,9 +33,20 @@
           :class="['source-item', { active: selectedSource?.subType === 'system-setting' }]"
           @click="selectSource({ subType: 'system-setting', name: '系统设置' })"
         >
-          <span class="source-icon">⚙️</span>
+          <Icon name="settings" :size="18" class="source-icon source-svg-icon" />
           <span class="source-name">系统设置</span>
           <span class="source-badge">{{ settingCount }}</span>
+        </div>
+
+        <!-- 本地启动 -->
+        <div
+          v-if="localShortcutCount > 0"
+          :class="['source-item', { active: selectedSource?.subType === 'local-shortcut' }]"
+          @click="selectSource({ subType: 'local-shortcut', name: '本地启动' })"
+        >
+          <Icon name="folder" :size="18" class="source-icon source-svg-icon" />
+          <span class="source-name">本地启动</span>
+          <span class="source-badge">{{ localShortcutCount }}</span>
         </div>
 
         <!-- 内置插件列表 -->
@@ -119,9 +130,9 @@
             <p>暂无功能指令</p>
           </div>
 
-          <!-- 系统应用/设置：单个显示 -->
+          <!-- 系统应用/设置/本地启动：单个显示 -->
           <template
-            v-if="selectedSource?.subType === 'app' || selectedSource?.subType === 'system-setting'"
+            v-if="selectedSource?.subType === 'app' || selectedSource?.subType === 'system-setting' || selectedSource?.subType === 'local-shortcut'"
           >
             <CommandCard
               v-for="(cmd, index) in filteredSystemCommands"
@@ -254,7 +265,7 @@ const emit = defineEmits<{
 
 // 定义 Command 类型（从 commandDataStore 复制）
 export type CommandType = 'direct' | 'plugin' | 'builtin'
-export type CommandSubType = 'app' | 'system-setting'
+export type CommandSubType = 'app' | 'system-setting' | 'local-shortcut'
 export type CommandCmdType = 'text' | 'regex' | 'over'
 
 export interface Command {
@@ -764,7 +775,12 @@ const settingCount = computed(
     allCommands.value.filter((c) => c.type === 'direct' && c.subType === 'system-setting').length
 )
 
-// 当前选中来源的指令（系统应用/设置）
+const localShortcutCount = computed(
+  () =>
+    allCommands.value.filter((c) => c.type === 'direct' && c.subType === 'local-shortcut').length
+)
+
+// 当前选中来源的指令（系统应用/设置/本地启动）
 const systemCommands = computed(() => {
   if (!selectedSource.value) return []
 
@@ -783,6 +799,10 @@ const systemCommands = computed(() => {
       ...cmd,
       icon: cmd.icon || settingsFillIcon
     }))
+  } else if (source.subType === 'local-shortcut') {
+    filteredCommands = allCommands.value.filter(
+      (c) => c.type === 'direct' && c.subType === 'local-shortcut'
+    )
   }
 
   return filteredCommands
@@ -883,7 +903,8 @@ const hasCommands = computed(
 const textFeaturesCount = computed(() => {
   if (
     selectedSource.value?.subType === 'app' ||
-    selectedSource.value?.subType === 'system-setting'
+    selectedSource.value?.subType === 'system-setting' ||
+    selectedSource.value?.subType === 'local-shortcut'
   ) {
     return filteredSystemCommands.value.length
   }
@@ -1048,6 +1069,10 @@ onMounted(async () => {
   font-weight: 500;
 }
 
+.source-item.active .source-svg-icon {
+  color: var(--primary-color);
+}
+
 .source-icon {
   width: 20px;
   height: 20px;
@@ -1057,6 +1082,10 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.source-svg-icon {
+  color: var(--text-secondary);
 }
 
 .plugin-icon {

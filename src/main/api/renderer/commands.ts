@@ -938,6 +938,24 @@ export class AppsAPI {
         })
       }
 
+      // 处理本地启动项
+      try {
+        const localShortcuts = await databaseAPI.dbGet('local-shortcuts')
+        if (localShortcuts && Array.isArray(localShortcuts)) {
+          for (const shortcut of localShortcuts) {
+            commands.push({
+              name: shortcut.alias || shortcut.name,
+              path: shortcut.path,
+              icon: shortcut.icon || '',
+              type: 'direct',
+              subType: 'local-shortcut'
+            })
+          }
+        }
+      } catch (error) {
+        console.error('[Commands] 获取本地启动项失败:', error)
+      }
+
       // 处理插件指令
       for (const plugin of plugins) {
         if (!plugin.features || !Array.isArray(plugin.features)) {

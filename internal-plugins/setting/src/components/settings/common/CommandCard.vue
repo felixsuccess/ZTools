@@ -38,6 +38,9 @@
             <span v-if="command.category" class="meta-tag">{{ command.category }}</span>
             <span class="meta-path">{{ command.settingUri || command.path }}</span>
           </template>
+          <template v-else-if="command.subType === 'local-shortcut'">
+            <span class="meta-path">{{ command.path }}</span>
+          </template>
         </slot>
       </div>
     </div>

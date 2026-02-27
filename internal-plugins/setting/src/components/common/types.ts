@@ -30,3 +30,4 @@ export type IconName =
   | 'info'
   | 'terminal'
   | 'more'
+  | 'monitor'
