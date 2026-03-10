@@ -1342,7 +1342,9 @@ onMounted(() => {
       <div class="setting-item">
         <div class="setting-label">
           <span>匹配推荐</span>
-          <span class="setting-desc">开启后显示搜索结果中的匹配推荐分组</span>
+          <span class="setting-desc">
+            开启后显示匹配推荐分组(建议不要关闭否则带 over 匹配无法正常运行)
+          </span>
         </div>
         <div class="setting-control">
           <label class="toggle">
