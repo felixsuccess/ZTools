@@ -10,13 +10,25 @@ permissions:
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
+    name: Build on ${{ matrix.os }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
+        include:
+          # macOS x64 (Intel)
+          - os: macos-13
+            arch: x64
+            build_cmd: pnpm build && electron-builder --mac --x64
+          # macOS ARM64 (Apple Silicon)
+          - os: macos-14
+            arch: arm64
+            build_cmd: pnpm build && electron-builder --mac --arm64
+          # Windows x64
+          - os: windows-latest
+            arch: x64
+            build_cmd: pnpm run build:win
 
     steps:
       - name: Check out git repository
@@ -41,26 +53,20 @@ jobs:
       - name: Install plugin dependencies
         run: |
           cd internal-plugins/setting
-          npm install
+          pnpm install
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # macOS 构建
-      - name: Build and Package (macOS)
-        if: matrix.os == 'macos-latest'
-        run: pnpm run build:mac
-
-      # Windows 构建
-      - name: Build and Package (Windows)
-        if: matrix.os == 'windows-latest'
-        run: pnpm run build:win
+      # 统一构建命令
+      - name: Build and Package
+        run: ${{ matrix.build_cmd }}
 
       # 上传平台产物（只上传指定文件类型）
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ matrix.os }}
+          name: artifact-${{ matrix.os }}-${{ matrix.arch }}
           path: |
             dist/*.exe
             dist/*.dmg
@@ -90,16 +96,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Download macOS artifact
+      - name: Download macOS x64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: artifact-macos-latest
+          name: artifact-macos-13-x64
+          path: dist
+
+      - name: Download macOS ARM64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact-macos-14-arm64
           path: dist
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
-          name: artifact-windows-latest
+          name: artifact-windows-latest-x64
           path: dist
 
       # 生成更新信息和下载链接
