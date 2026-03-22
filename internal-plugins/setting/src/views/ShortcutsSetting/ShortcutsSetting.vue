@@ -444,7 +444,7 @@ onMounted(() => {
 })
 
 useJumpFunction<ShortcutsSettingJumpFunction>((state) => {
-  if (state.payload) {
+  if (state.payload && !state.type) {
     prefillTarget.value = state.payload
     editingShortcut.value = null
     showEditor.value = true

@@ -958,8 +958,7 @@ async function handleContextMenuCommand(command: string): Promise<void> {
           name: '快捷键',
           cmdType: 'text',
           param: {
-            payload: targetCommand,
-            type: 'text'
+            payload: targetCommand
           }
         })
       } else {
