@@ -1,4 +1,4 @@
-import { BrowserWindow, session, WebContents, WebContentsView } from 'electron'
+import { BrowserWindow, session, shell, WebContents, WebContentsView } from 'electron'
 import fsSync from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'url'
@@ -24,6 +24,30 @@ import devToolsShortcut, { getDevToolsMode } from '../utils/devToolsShortcut'
 import windowManager from './windowManager'
 
 console.log('[Plugin] mainPreload', mainPreload)
+
+/**
+ * 为插件视图注册外部链接拦截器
+ * 拦截 http/https 链接跳转，使用系统默认浏览器打开
+ */
+export function registerExternalLinkInterceptor(webContents: WebContents): void {
+  // 拦截插件内部的页面跳转（如 <a href="..."> 点击）
+  webContents.on('will-navigate', (event, url) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      event.preventDefault()
+      console.log('[Plugin] 拦截页面跳转，使用默认浏览器打开:', url)
+      shell.openExternal(url)
+    }
+  })
+
+  // 拦截 target="_blank" 或 window.open 打开的链接
+  webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log('[Plugin] 拦截新窗口打开，使用默认浏览器打开:', url)
+      shell.openExternal(url)
+    }
+    return { action: 'deny' }
+  })
+}
 
 interface PluginViewInfo {
   path: string
@@ -712,6 +736,9 @@ export class PluginManager {
 
       pluginWindowManager.closeByPlugin(pluginPath)
     })
+
+    // 拦截外部链接跳转，使用系统默认浏览器打开
+    registerExternalLinkInterceptor(view.webContents)
   }
 
   // 发送消息到插件

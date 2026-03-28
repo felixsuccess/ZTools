@@ -8,6 +8,7 @@ import { GLOBAL_SCROLLBAR_CSS } from './globalStyles.js'
 import lmdbInstance from './lmdb/lmdbInstance'
 import devToolsShortcut, { getDevToolsMode } from '../utils/devToolsShortcut'
 import { WINDOW_WIDTH } from '../common/constants'
+import { registerExternalLinkInterceptor } from '../managers/pluginManager'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -301,6 +302,9 @@ class DetachedWindowManager {
       pluginView.webContents.on('blur', () => {
         devToolsShortcut.unregister()
       })
+
+      // 拦截外部链接跳转，使用系统默认浏览器打开
+      registerExternalLinkInterceptor(pluginView.webContents)
 
       // 窗口失焦时快照焦点状态（此时 lastFocusTarget 还是正确的）
       win.on('blur', () => {
